@@ -23,6 +23,6 @@ install-doc:
 
 install-mediascan:
 
-	install -vDm 755 mediascan/mediascan "$(BIN_DIR)"
+	install -vDm 755 mediascan/mediascan "$(BIN_DIR)/mediascan"
 
 .PHONY: check install install-doc install-mediascan shellcheck
