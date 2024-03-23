@@ -2,18 +2,53 @@
 #
 # SPDX-License-Identifier: AGPL-3.0
 
+_basic_mediascan() {
+  local \
+    _path="${1}"
+  find \
+    "${_path}" | \
+    grep \
+      "mp4"
+}
+
 # Refresh android multimedia library
 # $1: path to scan
+_termux_mediascan() {
+  local \
+    _path="${1}"
+  am \
+    broadcast \
+     -a \
+       "android.intent.action.MEDIA_MOUNTED" \
+     -d \
+       "file://${_path}"
+  termux-media-scan \
+    "${_path}"
+}
+
 _mediascan() {
   local \
     _path="${1}"
-  am broadcast \
-     -a android.intent.action.MEDIA_MOUNTED \
-     -d "file://${_path}"
-  termux-media-scan "${_path}"
+  _termux_flag="$( \
+    command \
+      -v \
+      "termux-media-scan")"
+  if \
+    [[ "${_termux_flag}" != "" ]]; then
+      _termux_mediascan \
+        "${_path}"
+      return
+  fi
+  _basic_mediascan \
+    "${_path}"
 }
 
 _path="${1}"
+
+(( $# == 0 )) && \
+  echo \
+    "USAGE: mediascan <path>" && \
+      exit
 
 _mediascan \
   "${_path}"
